@@ -28,8 +28,9 @@ class Player(GameSprite):
             self.rect.x -= self.speed
 
 
-class Enemy(GameSprite):     
+class Enemy(GameSprite):
     direction = 'left'
+
     def update(self):
         if self.rect.x < 470:
             self.direction = 'right'
@@ -39,7 +40,6 @@ class Enemy(GameSprite):
             self.rect.x -= self.speed
         if self.direction == 'right':
             self.rect.x += self.speed
-
 
 
 window = pg.display.set_mode((700, 500))
