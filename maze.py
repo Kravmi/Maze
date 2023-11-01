@@ -42,6 +42,22 @@ class Enemy(GameSprite):
             self.rect.x += self.speed
 
 
+class Wall(pg.sprite.Sprite):
+    def __init__(self, color, width, height, x, y):
+        super().__init__()
+        self.color = color
+        self.width = width
+        self.height = height
+        self.image = pg.Surface((self.width, self.height))
+        self.image.fill((color))
+        self.rect = self.image.get_rect()
+        self.rect.x = x
+        self.rect.y = y
+
+    def draw(self):
+        window.blit(self.image, (self.rect.x, self.rect.y))
+
+
 window = pg.display.set_mode((700, 500))
 pg.display.set_caption('Maze')
 background = pg.transform.scale(pg.image.load('background.jpg'), (700, 500))
@@ -54,15 +70,39 @@ clock = pg.time.Clock()
 hero = Player('hero.png', 5, 420, 15)
 cyborg = Enemy('cyborg.png', 420, 280, 4)
 treasure = GameSprite('treasure.png', 580, 420, 0)
+GREEN = (119, 119, 0)
+wall_1 = Wall(GREEN, 400, 10, 100, 50)
+wall_2 = Wall(GREEN, 10, 355, 100, 50)
+wall_3 = Wall(GREEN, 10, 300, 410, 160)
+finish = False
+pg.font.init()
+font = pg.font.Font(None, 70)
+win = font.render('YOU WIN!!!', True, (255, 0, 0))
+lose = font.render('YOU LOSE!!!', True, (255, 0, 0))
 while game:
-    window.blit(background, (0, 0))
-    hero.update()
-    cyborg.update()
-    hero.reset()
-    treasure.reset()
-    cyborg.reset()
     for i in pg.event.get():
         if i.type == pg.QUIT:
             game = False
+    if not finish:
+        window.blit(background, (0, 0))
+        wall_1.draw()
+        wall_2.draw()
+        wall_3.draw()
+        hero.update()
+        cyborg.update()
+        hero.reset()
+        treasure.reset()
+        cyborg.reset()
+
+        if pg.sprite.collide_rect(hero, treasure):
+            finish = True
+            window.blit(win, (200, 200))
+
+        for obj in [wall_1, wall_2, wall_3, cyborg]:
+            if pg.sprite.collide_rect(hero, obj): 
+                finish = True
+                window.blit(lose, (200, 200))
+
+
     pg.display.update()
     clock.tick(FPS)
