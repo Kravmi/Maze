@@ -1,5 +1,6 @@
 # создай игру "Лабиринт"!
 import pygame as pg
+import constant as const
 
 
 class GameSprite(pg.sprite.Sprite):
@@ -65,20 +66,21 @@ pg.mixer.init()
 pg.mixer.music.load('jungles.ogg')
 pg.mixer.music.play()
 game = True
-FPS = 60
 clock = pg.time.Clock()
-hero = Player('hero.png', 5, 420, 15)
+hero = Player('hero.png', 5, 420, 10)
 cyborg = Enemy('cyborg.png', 420, 280, 4)
 treasure = GameSprite('treasure.png', 580, 420, 0)
-GREEN = (119, 119, 0)
-wall_1 = Wall(GREEN, 400, 10, 100, 50)
-wall_2 = Wall(GREEN, 10, 355, 100, 50)
-wall_3 = Wall(GREEN, 10, 300, 410, 160)
+wall_1 = Wall(const.GREEN, 400, 10, 100, 50)
+wall_2 = Wall(const.GREEN, 10, 355, 100, 50)
+wall_3 = Wall(const.GREEN, 10, 300, 410, 160)
+wall_4 = Wall(const.GREEN, 200, 10, 100, 250)
 finish = False
 pg.font.init()
 font = pg.font.Font(None, 70)
-win = font.render('YOU WIN!!!', True, (255, 0, 0))
-lose = font.render('YOU LOSE!!!', True, (255, 0, 0))
+win = font.render('YOU WIN!!!', True, const.YELLOW)
+lose = font.render('YOU LOSE!!!', True, const.RED)
+money = pg.mixer.Sound('money.ogg')
+kick = pg.mixer.Sound('kick.ogg')
 while game:
     for i in pg.event.get():
         if i.type == pg.QUIT:
@@ -88,6 +90,7 @@ while game:
         wall_1.draw()
         wall_2.draw()
         wall_3.draw()
+        wall_4.draw()
         hero.update()
         cyborg.update()
         hero.reset()
@@ -97,12 +100,13 @@ while game:
         if pg.sprite.collide_rect(hero, treasure):
             finish = True
             window.blit(win, (200, 200))
+            money.play()
 
         for obj in [wall_1, wall_2, wall_3, cyborg]:
-            if pg.sprite.collide_rect(hero, obj): 
+            if pg.sprite.collide_rect(hero, obj):
                 finish = True
                 window.blit(lose, (200, 200))
-
+                kick.play()
 
     pg.display.update()
-    clock.tick(FPS)
+    clock.tick(const.FPS)
